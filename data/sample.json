@@ -2,8 +2,17 @@
   "event_id": "sample-019",
   "event_type": "LISTING_CAPTURED",
   "aggregate_type": "product_listing",
-  "aggregate_id": "aggregate-019",
+  "aggregate_id": "lst-sample-019",
   "occurred_at": "2026-09-20T12:00:00+08:00",
   "version": 1,
-  "summary": "校园跨界零食处置领域样例"
+  "summary": "校园跨界零食处置领域样例：平台链接首次取证",
+  "payload": {
+    "platform": "platform_a",
+    "platform_listing_id": "A019",
+    "seller_ref": "slr-sample-019",
+    "snapshot_ref": "snp-sample-019",
+    "title_at_capture": "可食用作业本糖果",
+    "claimed_category": "candy",
+    "listing_status": "on_sale"
+  }
 }

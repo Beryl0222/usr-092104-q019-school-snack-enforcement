@@ -1,0 +1,331 @@
+{
+  "catalog_version": "0.2.0",
+  "title": "校园跨界零食处置事件目录",
+  "description": "事件载荷契约的单一事实源。信封字段见 domain.schema.json；本文件定义每个事件的聚合归属、必填/可选载荷与语义规则编号，src/validator.py 据此校验。新增事件只能追加，不得复用既有事件名表达其他含义。",
+  "principles": [
+    {
+      "code": "P1_ENVELOPE_STABLE",
+      "text": "信封七字段（event_id/event_type/aggregate_type/aggregate_id/occurred_at/version/summary）跨版本兼容，证据链字段全部放入 payload。"
+    },
+    {
+      "code": "P2_LOT_IDENTITY",
+      "text": "批次身份由实物标签、生产批次号与生产企业确立；商家修改商品标题、分类或链接文案不改变 physical_lot 身份，LISTING_REVISED 必须回挂同一 lot_ref。"
+    },
+    {
+      "code": "P3_POINT_IN_TIME_RULE",
+      "text": "食品分类与添加剂适用性按行为发生时有效标准版本判断，并须有实物证据支撑；标准版本与实物证据缺失时结论只能为 unresolved，系统不得替执法人员推定。"
+    },
+    {
+      "code": "P4_SYSTEM_ADVISES_HUMAN_SIGNS",
+      "text": "系统只产生冲突提示（conflict_tip / *_CONFLICT_FLAGGED），提示不得带签字字段；一切执法决定以 DECISION_SIGNED 中具备执法资格人员的签字为准。"
+    },
+    {
+      "code": "P5_MATCH_BASIS_KEPT",
+      "text": "跨平台同源关联必须留存匹配依据（生产许可证号、条码、批次号、配料指纹、版式哈希、人工确认）；仅凭图片相似度（image_only）只能生成待确认线索，不得自动合并批次或链接。"
+    },
+    {
+      "code": "P6_SAMPLE_CHAIN_OF_CUSTODY",
+      "text": "购样、封存、移交、接收、留样全程双人交接、记录封条编号与封条完整性；复检必须回溯初检报告与异议记录，形成独立报告版本。"
+    },
+    {
+      "code": "P7_PRECISION_DISPOSITION",
+      "text": "处置粒度为链接 / 门店 / 批次 / 生产企业，决定文书必须列明具体对象，禁止按商品标题批量下架误伤合规批次。"
+    },
+    {
+      "code": "P8_CHILD_PRIVACY",
+      "text": "面向学校、家长与公众的通知只描述商品、批次与处置信息，禁止包含购买儿童姓名、肖像、联系方式等身份信息。"
+    },
+    {
+      "code": "P9_RECALL_FOUR_STAGES",
+      "text": "召回统计区分已通知(notified)、已下架(delisted)、已退回(returned)、无法追回(unrecoverable)，数量逐级登记、不得互相冲抵。"
+    },
+    {
+      "code": "P10_TRACEBACK_FROM_BAG",
+      "text": "任一实物批次可经 CASE_SNAPSHOT_BUILT 回查线上宣传快照、经营主体与生产企业资质、分类与添加剂评估、抽样检测全链、流向、执法决定、整改申诉与召回反馈。"
+    }
+  ],
+  "aggregates": {
+    "product_listing": {"label": "平台商品链接（可变标题）", "id_prefix": "lst-", "note": "同一实物批次可对应多个链接；链接标题改版以 LISTING_REVISED 追加版本。"},
+    "listing_link": {"label": "跨链接同源关联（含匹配依据）", "id_prefix": "lnk-"},
+    "listing_snapshot": {"label": "页面证据快照（防篡改固定）", "id_prefix": "snap-"},
+    "seller": {"label": "经营主体（线上店铺/周边小店）", "id_prefix": "slr-"},
+    "manufacturer": {"label": "食品生产企业", "id_prefix": "mfr-"},
+    "food_license": {"label": "许可证（生产/经营，按时段有效）", "id_prefix": "lic-"},
+    "product": {"label": "产品（品牌+品名+标准，跨包装版本）", "id_prefix": "prd-"},
+    "package_version": {"label": "包装/标签版本", "id_prefix": "pkg-"},
+    "physical_lot": {"label": "实物批次（身份锚点）", "id_prefix": "lot-"},
+    "classification_assessment": {"label": "食品分类判定（按当时有效标准）", "id_prefix": "cls-"},
+    "ingredient_rule": {"label": "配料与添加剂适用性评估", "id_prefix": "ing-"},
+    "inspection_sample": {"label": "抽检样品（含购样封存留样）", "id_prefix": "spl-"},
+    "custody_transfer": {"label": "样品交接记录", "id_prefix": "cst-"},
+    "test_report": {"label": "检测报告（初检/复检版本）", "id_prefix": "rpt-"},
+    "flow_trace": {"label": "货物流向链", "id_prefix": "flw-"},
+    "conflict_tip": {"label": "系统冲突提示（无签字效力）", "id_prefix": "cnf-"},
+    "enforcement_action": {"label": "执法案件与决定（人工签字）", "id_prefix": "dec-"},
+    "appeal": {"label": "商户申诉与复核", "id_prefix": "apl-"},
+    "recall": {"label": "召回单与四阶段反馈", "id_prefix": "rcl-"},
+    "public_notice": {"label": "对学校/家长/公众通知", "id_prefix": "ntc-"},
+    "case_snapshot": {"label": "一案一档回查快照", "id_prefix": "case-"}
+  },
+  "events": {
+    "LISTING_CAPTURED": {
+      "aggregate": "product_listing",
+      "label": "平台链接首次取证",
+      "payload_required": ["platform", "platform_listing_id", "seller_ref", "snapshot_ref", "title_at_capture", "claimed_category"],
+      "payload_optional": ["url", "shop_name", "listing_status", "lot_ref"],
+      "rules": []
+    },
+    "LISTING_REVISED": {
+      "aggregate": "product_listing",
+      "label": "链接标题或类目被修改",
+      "payload_required": ["lot_ref", "revision_no", "changed_fields", "previous_snapshot_ref", "current_snapshot_ref"],
+      "payload_optional": ["title_before", "title_after", "category_before", "category_after"],
+      "rules": ["R_IDENTITY_ANCHOR"],
+      "rule_detail": "changed_fields 可含 title/category/ingredient_declaration/license_display；lot_ref 不得因标题或类目改动而更换。"
+    },
+    "LISTING_LINKED": {
+      "aggregate": "listing_link",
+      "label": "跨平台同源关联提议或确认",
+      "payload_required": ["linkage_no", "listing_refs", "match_basis", "evidence_refs", "linkage_status"],
+      "payload_optional": ["proposed_lot_ref", "confirmed_by", "confirmed_at", "confidence_score", "image_similarity_score"],
+      "rules": ["R_MATCH_BASIS"]
+    },
+    "PAGE_SNAPSHOT_FIXED": {
+      "aggregate": "listing_snapshot",
+      "label": "页面证据固定（哈希存证）",
+      "payload_required": ["listing_ref", "snapshot_hash", "capture_method", "page_fields"],
+      "payload_optional": ["url", "warc_ref", "captured_by"],
+      "rules": ["R_HASH_SHA256"]
+    },
+    "SELLER_REGISTERED": {
+      "aggregate": "seller",
+      "label": "经营主体登记",
+      "payload_required": ["seller_name", "unified_social_credit_code", "seller_type"],
+      "payload_optional": ["platform_seller_id", "store_name", "store_address", "contact_ref"],
+      "rules": []
+    },
+    "MANUFACTURER_REGISTERED": {
+      "aggregate": "manufacturer",
+      "label": "生产企业登记",
+      "payload_required": ["manufacturer_name", "production_license_no"],
+      "payload_optional": ["address", "contact_ref"],
+      "rules": []
+    },
+    "LICENSE_VERIFIED": {
+      "aggregate": "food_license",
+      "label": "许可证核验",
+      "payload_required": ["license_no", "license_type", "holder_ref", "valid_from", "valid_to", "licensed_scope", "verified_at", "verify_source", "license_status"],
+      "payload_optional": ["license_doc_ref"],
+      "rules": ["R_LICENSE_VALIDITY_WINDOW"]
+    },
+    "LICENSE_CONFLICT_FLAGGED": {
+      "aggregate": "food_license",
+      "label": "许可证冲突提示",
+      "payload_required": ["license_no", "conflict_code", "evidence_refs", "detail"],
+      "payload_optional": ["listing_ref", "lot_ref"],
+      "rules": ["R_NO_SYSTEM_SIGNATURE"]
+    },
+    "PRODUCT_REGISTERED": {
+      "aggregate": "product",
+      "label": "产品登记",
+      "payload_required": ["product_name", "manufacturer_ref"],
+      "payload_optional": ["barcode", "product_standard_no", "brand"],
+      "rules": []
+    },
+    "PACKAGE_VERSION_RECORDED": {
+      "aggregate": "package_version",
+      "label": "包装/标签版本记录",
+      "payload_required": ["product_ref", "package_version_code", "package_layout_hash", "label_fields", "first_seen_ref"],
+      "payload_optional": ["first_seen_at"],
+      "rules": ["R_HASH_SHA256"]
+    },
+    "LOT_IDENTIFIED": {
+      "aggregate": "physical_lot",
+      "label": "实物批次认定（身份锚点）",
+      "payload_required": ["lot_code", "product_ref", "package_version_ref", "manufacturer_ref", "identifying_evidence_refs", "identified_by"],
+      "payload_optional": ["listing_refs", "production_date", "shelf_life", "identified_at"],
+      "rules": []
+    },
+    "LOT_CLASSIFIED": {
+      "aggregate": "classification_assessment",
+      "label": "食品分类判定",
+      "payload_required": ["lot_ref", "claimed_category", "assessed_category", "effective_standards", "physical_evidence_refs"],
+      "payload_optional": ["assessor", "assessed_at", "reasoning"],
+      "rules": ["R_POINT_IN_TIME_STANDARD", "R_CLASSIFICATION_EVIDENCE"]
+    },
+    "INGREDIENT_RULE_EVALUATED": {
+      "aggregate": "ingredient_rule",
+      "label": "配料及添加剂适用性评估",
+      "payload_required": ["lot_ref", "rule_basis", "declared_ingredients", "additives", "physical_evidence_refs", "overall_verdict"],
+      "payload_optional": ["evaluated_at", "evaluator"],
+      "rules": ["R_POINT_IN_TIME_STANDARD", "R_ADDITIVE_VERDICT"]
+    },
+    "CLASSIFICATION_CONFLICT_FLAGGED": {
+      "aggregate": "classification_assessment",
+      "label": "分类/标题冲突提示",
+      "payload_required": ["lot_ref", "conflict_code", "claimed_category", "assessed_category", "evidence_refs", "detail"],
+      "payload_optional": ["listing_ref"],
+      "rules": ["R_NO_SYSTEM_SIGNATURE"],
+      "rule_detail": "典型情形：标题标为糖果/威化糯米纸/淀粉制品/文具赠品，但实物与配料指向不同分类；仅提示，分类结论与处置仍由人工判定签发。"
+    },
+    "SAMPLE_PURCHASED": {
+      "aggregate": "inspection_sample",
+      "label": "购样（神秘买样/现场购样）",
+      "payload_required": ["sample_no", "lot_ref", "purchased_from_ref", "purchased_at", "buyers", "quantity", "purchase_evidence_refs"],
+      "payload_optional": ["unit_price", "purchase_channel"],
+      "rules": ["R_DUAL_PERSONNEL"]
+    },
+    "SAMPLE_SEALED": {
+      "aggregate": "inspection_sample",
+      "label": "样品封存",
+      "payload_required": ["sample_ref", "seal_no", "sealed_at", "sealers", "seal_photo_ref"],
+      "payload_optional": ["seal_material", "storage_condition"],
+      "rules": ["R_DUAL_PERSONNEL"]
+    },
+    "SAMPLE_TRANSFERRED": {
+      "aggregate": "custody_transfer",
+      "label": "样品移交送检",
+      "payload_required": ["sample_ref", "from_party", "to_party", "transferred_at", "seal_intact", "handover_doc_ref", "both_parties_signed"],
+      "payload_optional": ["transfer_condition"],
+      "rules": ["R_CUSTODY_HANDOVER"]
+    },
+    "SAMPLE_RECEIVED": {
+      "aggregate": "inspection_sample",
+      "label": "检测机构收样",
+      "payload_required": ["sample_ref", "received_at", "receiver", "seal_intact", "appearance_condition"],
+      "payload_optional": ["storage_condition", "custody_ref"],
+      "rules": []
+    },
+    "SAMPLE_RESERVED": {
+      "aggregate": "inspection_sample",
+      "label": "留样登记",
+      "payload_required": ["sample_ref", "reserved_quantity", "retention_location", "retention_until", "custodian"],
+      "payload_optional": ["reserved_at"],
+      "rules": []
+    },
+    "TEST_REPORT_ISSUED": {
+      "aggregate": "test_report",
+      "label": "检测报告出具（初检/复检）",
+      "payload_required": ["sample_ref", "report_no", "testing_org", "issued_at", "test_round", "test_items", "overall_conclusion", "report_hash"],
+      "payload_optional": ["original_report_ref", "dispute_ref"],
+      "rules": ["R_HASH_SHA256", "R_RETEST_LINEAGE"]
+    },
+    "TEST_RESULT_DISPUTED": {
+      "aggregate": "test_report",
+      "label": "检测结果异议",
+      "payload_required": ["original_report_ref", "disputed_by", "disputed_at", "reasons"],
+      "payload_optional": ["accepted", "review_opinion"],
+      "rules": []
+    },
+    "FLOW_NODE_RECORDED": {
+      "aggregate": "flow_trace",
+      "label": "流向节点登记",
+      "payload_required": ["trace_no", "lot_ref", "seq", "node_type", "party_ref", "quantity", "occurred_at", "evidence_ref"],
+      "payload_optional": ["previous_node_ref", "batch_no_at_node"],
+      "rules": ["R_FLOW_SEQ"]
+    },
+    "FLOW_TRACE_COMPLETED": {
+      "aggregate": "flow_trace",
+      "label": "流向追溯完成",
+      "payload_required": ["trace_no", "lot_ref", "node_count", "completed_at"],
+      "payload_optional": ["known_unrecoverable_quantity"],
+      "rules": []
+    },
+    "CONFLICT_FLAGGED": {
+      "aggregate": "conflict_tip",
+      "label": "通用冲突提示",
+      "payload_required": ["subject_refs", "conflict_code", "detail", "evidence_refs", "severity"],
+      "payload_optional": ["suggested_action"],
+      "rules": ["R_NO_SYSTEM_SIGNATURE"]
+    },
+    "DECISION_DRAFTED": {
+      "aggregate": "enforcement_action",
+      "label": "执法决定草拟（不生效）",
+      "payload_required": ["decision_no", "scope", "scope_targets", "proposed_result", "basis_refs", "drafted_by", "drafted_at"],
+      "payload_optional": ["lot_ref", "draft_doc_ref"],
+      "rules": ["R_DISPOSITION_SCOPE"]
+    },
+    "DECISION_SIGNED": {
+      "aggregate": "enforcement_action",
+      "label": "执法决定签发（人工签字生效）",
+      "payload_required": ["decision_no", "scope", "scope_targets", "result", "legal_basis", "evidence_chain_refs", "signed_by", "signed_at", "decision_doc_hash"],
+      "payload_optional": ["lot_ref", "effective_at"],
+      "rules": ["R_DISPOSITION_SCOPE", "R_HUMAN_SIGNATURE", "R_HASH_SHA256"]
+    },
+    "RECTIFICATION_SUBMITTED": {
+      "aggregate": "enforcement_action",
+      "label": "商户提交整改",
+      "payload_required": ["decision_ref", "submitted_by", "submitted_at", "measures", "evidence_refs"],
+      "payload_optional": ["rectification_status"],
+      "rules": []
+    },
+    "APPEAL_FILED": {
+      "aggregate": "appeal",
+      "label": "商户申诉",
+      "payload_required": ["appeal_no", "decision_ref", "appellant", "filed_at", "grounds", "evidence_refs"],
+      "payload_optional": [],
+      "rules": []
+    },
+    "APPEAL_REVIEWED": {
+      "aggregate": "appeal",
+      "label": "申诉复核结论",
+      "payload_required": ["appeal_ref", "appeal_status", "reviewed_by", "reviewed_at", "opinion"],
+      "payload_optional": ["amended_decision_ref"],
+      "rules": []
+    },
+    "RECALL_STARTED": {
+      "aggregate": "recall",
+      "label": "召回启动",
+      "payload_required": ["recall_no", "lot_ref", "decision_ref", "started_at", "initiated_by"],
+      "payload_optional": ["recall_scope", "channel"],
+      "rules": []
+    },
+    "RECALL_UPDATED": {
+      "aggregate": "recall",
+      "label": "召回阶段数量反馈",
+      "payload_required": ["recall_no", "stage", "quantity", "recorded_at"],
+      "payload_optional": ["cumulative_quantity", "note", "evidence_ref"],
+      "rules": ["R_RECALL_STAGE"]
+    },
+    "RECALL_CLOSED": {
+      "aggregate": "recall",
+      "label": "召回关闭与对账",
+      "payload_required": ["recall_no", "closed_at", "totals"],
+      "payload_optional": ["unrecoverable_reasons"],
+      "rules": ["R_RECALL_TOTALS"]
+    },
+    "NOTICE_PUBLISHED": {
+      "aggregate": "public_notice",
+      "label": "发布学校/家长/公众通知",
+      "payload_required": ["notice_no", "audience", "channel", "title", "content_hash", "published_at", "child_identity_protected"],
+      "payload_optional": ["lot_refs", "decision_ref", "recall_ref"],
+      "rules": ["R_HASH_SHA256", "R_CHILD_PRIVACY"]
+    },
+    "CASE_SNAPSHOT_BUILT": {
+      "aggregate": "case_snapshot",
+      "label": "一案一档回查快照生成",
+      "payload_required": ["case_no", "anchor_lot_ref", "included_refs", "generated_at", "snapshot_hash"],
+      "payload_optional": ["generated_by"],
+      "rules": ["R_HASH_SHA256"]
+    }
+  },
+  "rule_definitions": {
+    "R_IDENTITY_ANCHOR": "链接改版事件必须保留同一 lot_ref；标题/类目字段只能记录前后值，不得重指批次。",
+    "R_MATCH_BASIS": "linkage_status=confirmed 时，match_basis 至少包含一项非 image_only 依据，或留存 manual_confirmation 与 confirmed_by；image_only 仅允许产生 proposed 线索。",
+    "R_HASH_SHA256": "载荷中的 * _hash / snapshot_hash / report_hash 等哈希字段必须为 64 位小写十六进制 SHA-256。",
+    "R_LICENSE_VALIDITY_WINDOW": "许可证须有 valid_from/valid_to 时段；核验结论只代表 verified_at 时点。",
+    "R_NO_SYSTEM_SIGNATURE": "冲突提示载荷禁止出现 signed_by / system_signed 字段，系统意见不产生执法效力。",
+    "R_POINT_IN_TIME_STANDARD": "标准依据必须列出 standard_no 与版本，且 effective_at 不晚于判定/评估时间，以体现行为时有效标准。",
+    "R_CLASSIFICATION_EVIDENCE": "assessed_category 为非 unresolved 时必须提供实物证据；证据不足只能判 unresolved。",
+    "R_ADDITIVE_VERDICT": "additives 每项须给 verdict(permitted/not_permitted/out_of_range)；任一不允许或超限不得汇总为合规。",
+    "R_DUAL_PERSONNEL": "购样人与封存人须为两人及以上（双人抽样制度）。",
+    "R_CUSTODY_HANDOVER": "移交须有交出方、接收方、封条完好记录，且 both_parties_signed=true。",
+    "R_RETEST_LINEAGE": "test_round=retest 时必须携带 original_report_ref 与 dispute_ref。",
+    "R_FLOW_SEQ": "流向节点 seq 在同一 trace_no 内从 1 连续递增。",
+    "R_DISPOSITION_SCOPE": "scope 必须是 link/store/lot/manufacturer 之一，scope_targets 不得为空。",
+    "R_HUMAN_SIGNATURE": "DECISION_SIGNED 必须携带具备执法资格人员 signed_by 与 signed_at；禁止 system_signed=true。",
+    "R_RECALL_STAGE": "stage 必须是 notified/delisted/returned/unrecoverable 之一，quantity 为非负数。",
+    "R_RECALL_TOTALS": "totals 必须同时含四阶段数量且均为非负。",
+    "R_CHILD_PRIVACY": "audience 为 school/parent/public 时 child_identity_protected 必须为 true，且载荷不得出现 child_identity 等儿童身份字段。"
+  }
+}

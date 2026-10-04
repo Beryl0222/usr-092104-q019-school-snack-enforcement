@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "校园跨界零食处置领域事件",
+  "description": "信封七字段保持向下兼容：新增事件与聚合只能追加，不得改动既有含义。各事件的载荷字段以 event-catalog.json 为单一事实源，由 src/validator.py 校验。",
   "type": "object",
   "required": [
     "event_id",
@@ -14,25 +15,72 @@
   "properties": {
     "event_id": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "事件全局唯一编号，建议 ULID/UUID"
     },
     "event_type": {
       "type": "string",
       "enum": [
         "LISTING_CAPTURED",
+        "LISTING_REVISED",
+        "LISTING_LINKED",
+        "PAGE_SNAPSHOT_FIXED",
+        "SELLER_REGISTERED",
+        "MANUFACTURER_REGISTERED",
+        "LICENSE_VERIFIED",
+        "LICENSE_CONFLICT_FLAGGED",
+        "PRODUCT_REGISTERED",
+        "PACKAGE_VERSION_RECORDED",
+        "LOT_IDENTIFIED",
         "LOT_CLASSIFIED",
+        "INGREDIENT_RULE_EVALUATED",
+        "CLASSIFICATION_CONFLICT_FLAGGED",
+        "SAMPLE_PURCHASED",
+        "SAMPLE_SEALED",
         "SAMPLE_TRANSFERRED",
+        "SAMPLE_RECEIVED",
+        "SAMPLE_RESERVED",
+        "TEST_REPORT_ISSUED",
+        "TEST_RESULT_DISPUTED",
+        "FLOW_NODE_RECORDED",
+        "FLOW_TRACE_COMPLETED",
+        "CONFLICT_FLAGGED",
+        "DECISION_DRAFTED",
         "DECISION_SIGNED",
-        "RECALL_UPDATED"
+        "RECTIFICATION_SUBMITTED",
+        "APPEAL_FILED",
+        "APPEAL_REVIEWED",
+        "RECALL_STARTED",
+        "RECALL_UPDATED",
+        "RECALL_CLOSED",
+        "NOTICE_PUBLISHED",
+        "CASE_SNAPSHOT_BUILT"
       ]
     },
     "aggregate_type": {
       "type": "string",
       "enum": [
         "product_listing",
+        "listing_link",
+        "listing_snapshot",
+        "seller",
+        "manufacturer",
+        "food_license",
+        "product",
+        "package_version",
         "physical_lot",
+        "classification_assessment",
+        "ingredient_rule",
         "inspection_sample",
-        "enforcement_action"
+        "custody_transfer",
+        "test_report",
+        "flow_trace",
+        "conflict_tip",
+        "enforcement_action",
+        "appeal",
+        "recall",
+        "public_notice",
+        "case_snapshot"
       ]
     },
     "aggregate_id": {
@@ -41,15 +89,129 @@
     },
     "occurred_at": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "事件事实发生时间（不是入库时间）"
     },
     "version": {
       "type": "integer",
-      "minimum": 1
+      "minimum": 1,
+      "description": "同一 aggregate_id 内从 1 递增的版本号"
     },
     "summary": {
       "type": "string",
       "minLength": 1
+    },
+    "payload": {
+      "type": "object",
+      "description": "事件载荷，允许字段与必填字段见 event-catalog.json；事件之间通过 *_ref / evidence 字段相互引用形成证据链。"
+    }
+  },
+  "$defs": {
+    "platform": {
+      "type": "string",
+      "enum": ["platform_a", "platform_b", "platform_c", "offline_check"]
+    },
+    "disposition_scope": {
+      "type": "string",
+      "enum": ["link", "store", "lot", "manufacturer"],
+      "description": "处置粒度：链接 / 门店 / 批次 / 生产企业，禁止以标题为单位整店误伤"
+    },
+    "conflict_code": {
+      "type": "string",
+      "enum": [
+        "TITLE_CATEGORY_MISMATCH",
+        "INGREDIENT_LABEL_MISMATCH",
+        "LICENSE_MISSING",
+        "LICENSE_EXPIRED",
+        "LICENSE_SCOPE_MISMATCH",
+        "LICENSE_NUMBER_MISMATCH",
+        "ADDITIVE_NOT_PERMITTED",
+        "ADDITIVE_OUT_OF_RANGE",
+        "STANDARD_VERSION_AMBIGUOUS",
+        "PACKAGING_VERSION_MISMATCH",
+        "CLAIMED_CATEGORY_UNSUPPORTED",
+        "TEST_RESULT_ABNORMAL",
+        "IDENTITY_EVIDENCE_INSUFFICIENT"
+      ]
+    },
+    "match_basis": {
+      "type": "string",
+      "enum": [
+        "manufacturer_license_no",
+        "package_barcode",
+        "lot_code",
+        "ingredient_fingerprint",
+        "package_layout_hash",
+        "manual_confirmation",
+        "image_only"
+      ],
+      "description": "同源关联依据；image_only 不得单独作为合并依据，仅可作为待人工确认的线索"
+    },
+    "custody_action": {
+      "type": "string",
+      "enum": ["purchase", "seal", "transfer", "receive", "reserve", "destroy", "return"],
+      "description": "购样封存链：购样→封存→移交→接收→留样，全程双人交接"
+    },
+    "test_round": {
+      "type": "string",
+      "enum": ["initial", "retest"],
+      "description": "初检 / 复检；复检必须回溯原报告并记录异议"
+    },
+    "recall_stage": {
+      "type": "string",
+      "enum": ["notified", "delisted", "returned", "unrecoverable"],
+      "description": "召回四阶段：已通知→已下架→已退回→无法追回，逐级统计，不可互相冲抵"
+    },
+    "notice_audience": {
+      "type": "string",
+      "enum": ["school", "parent", "public", "platform", "seller"],
+      "description": "通知对象；面向学校与家长的通知禁止出现购买儿童身份信息"
+    },
+    "food_category": {
+      "type": "string",
+      "enum": [
+        "candy",
+        "wafer_rice_paper",
+        "starch_product",
+        "compound_food",
+        "stationery_gift_nonfood",
+        "unresolved"
+      ],
+      "description": "食品分类判定结果；stationery_gift_nonfood 表示实际按非食品/赠品管理，unresolved 表示证据不足不得下结论"
+    },
+    "decision_result": {
+      "type": "string",
+      "enum": [
+        "no_violation",
+        "rectification_order",
+        "delisting_order",
+        "seizure_order",
+        "fine",
+        "case_transferred"
+      ]
+    },
+    "appeal_status": {
+      "type": "string",
+      "enum": ["submitted", "accepted", "rejected", "decision_amended", "decision_upheld"]
+    },
+    "hash_alg": {
+      "type": "string",
+      "enum": ["sha256"]
+    },
+    "evidence_ref": {
+      "type": "object",
+      "description": "证据引用：指向另一事件/聚合及其证据快照哈希",
+      "required": ["ref_type", "ref_id"],
+      "properties": {
+        "ref_type": { "type": "string", "minLength": 1 },
+        "ref_id": { "type": "string", "minLength": 1 },
+        "snapshot_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "captured_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": true
     }
   },
   "additionalProperties": true

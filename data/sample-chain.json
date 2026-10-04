@@ -1,0 +1,989 @@
+{
+  "case_no": "case-2026-001",
+  "scenario": "开学季『可食用作业本』跨界零食：同一图案在不同链接被标为糖果/威化糯米纸/淀粉制品/文具赠品，标题随链接变化但批次唯一。样例按事件事实顺序排列，信封字段保持七字段，证据链全部在 payload 中相互引用。",
+  "events": [
+    {
+      "event_id": "evt-0001",
+      "event_type": "SELLER_REGISTERED",
+      "aggregate_type": "seller",
+      "aggregate_id": "slr-shop-a001",
+      "occurred_at": "2026-09-02T09:10:00+08:00",
+      "version": 1,
+      "summary": "平台A『甜园食品旗舰店』经营主体登记",
+      "payload": {
+        "seller_name": "甜园食品销售有限公司",
+        "unified_social_credit_code": "91310101MA1K0001A",
+        "seller_type": "online_flagship",
+        "platform_seller_id": "A001",
+        "store_name": "甜园食品旗舰店",
+        "contact_ref": "contact-slr-a001"
+      }
+    },
+    {
+      "event_id": "evt-0002",
+      "event_type": "SELLER_REGISTERED",
+      "aggregate_type": "seller",
+      "aggregate_id": "slr-shop-b002",
+      "occurred_at": "2026-09-02T09:12:00+08:00",
+      "version": 1,
+      "summary": "平台B『校门口零食仓』经营主体登记",
+      "payload": {
+        "seller_name": "校门口食品商行",
+        "unified_social_credit_code": "91310101MA1K0002B",
+        "seller_type": "online_store",
+        "platform_seller_id": "B002",
+        "store_name": "校门口零食仓"
+      }
+    },
+    {
+      "event_id": "evt-0003",
+      "event_type": "SELLER_REGISTERED",
+      "aggregate_type": "seller",
+      "aggregate_id": "slr-store-st001",
+      "occurred_at": "2026-09-02T09:15:00+08:00",
+      "version": 1,
+      "summary": "校园周边『晨光文具杂货』门店登记",
+      "payload": {
+        "seller_name": "晨光文具杂货经营部",
+        "unified_social_credit_code": "91310101MA1K0003C",
+        "seller_type": "offline_store",
+        "store_name": "晨光文具杂货",
+        "store_address": "文教区勤学路17号"
+      }
+    },
+    {
+      "event_id": "evt-0004",
+      "event_type": "MANUFACTURER_REGISTERED",
+      "aggregate_type": "manufacturer",
+      "aggregate_id": "mfr-tianyuan",
+      "occurred_at": "2026-09-02T09:20:00+08:00",
+      "version": 1,
+      "summary": "包装标注生产企业『甜园食品厂』登记",
+      "payload": {
+        "manufacturer_name": "甜园食品厂",
+        "production_license_no": "SC10631010100123",
+        "address": "邻市食品工业园兴甜路8号"
+      }
+    },
+    {
+      "event_id": "evt-0005",
+      "event_type": "LICENSE_VERIFIED",
+      "aggregate_type": "food_license",
+      "aggregate_id": "lic-SC10631010100123",
+      "occurred_at": "2026-09-09T10:00:00+08:00",
+      "version": 1,
+      "summary": "生产许可证核验：有效期内，范围含糖果制品",
+      "payload": {
+        "license_no": "SC10631010100123",
+        "license_type": "food_production",
+        "holder_ref": "mfr-tianyuan",
+        "valid_from": "2021-01-10T00:00:00+08:00",
+        "valid_to": "2026-12-31T23:59:59+08:00",
+        "licensed_scope": ["糖果制品", "淀粉糖"],
+        "verified_at": "2026-09-09T10:00:00+08:00",
+        "verify_source": "食品生产许可查询平台",
+        "license_status": "valid",
+        "license_doc_ref": "doc-lic-sc-001"
+      }
+    },
+    {
+      "event_id": "evt-0006",
+      "event_type": "LICENSE_VERIFIED",
+      "aggregate_type": "food_license",
+      "aggregate_id": "lic-JY1310101000456",
+      "occurred_at": "2026-09-09T10:05:00+08:00",
+      "version": 1,
+      "summary": "周边门店食品经营许可证核验：有效，范围含预包装食品",
+      "payload": {
+        "license_no": "JY1310101000456",
+        "license_type": "food_business",
+        "holder_ref": "slr-store-st001",
+        "valid_from": "2024-03-01T00:00:00+08:00",
+        "valid_to": "2029-02-28T23:59:59+08:00",
+        "licensed_scope": ["预包装食品销售"],
+        "verified_at": "2026-09-09T10:05:00+08:00",
+        "verify_source": "食品经营许可查询平台",
+        "license_status": "valid"
+      }
+    },
+    {
+      "event_id": "evt-0007",
+      "event_type": "PRODUCT_REGISTERED",
+      "aggregate_type": "product",
+      "aggregate_id": "prd-edible-homework",
+      "occurred_at": "2026-09-09T10:30:00+08:00",
+      "version": 1,
+      "summary": "产品登记：『可食用作业本』（品牌 甜园）",
+      "payload": {
+        "product_name": "可食用作业本（糯米纸糖）",
+        "manufacturer_ref": "mfr-tianyuan",
+        "barcode": "6970000000123",
+        "product_standard_no": "SB/T 10018",
+        "brand": "甜园"
+      }
+    },
+    {
+      "event_id": "evt-0008",
+      "event_type": "PACKAGE_VERSION_RECORDED",
+      "aggregate_type": "package_version",
+      "aggregate_id": "pkg-pv01",
+      "occurred_at": "2026-09-09T10:40:00+08:00",
+      "version": 1,
+      "summary": "包装版本 PV01：标注『威化糯米纸』，无糖果分类提示",
+      "payload": {
+        "product_ref": "prd-edible-homework",
+        "package_version_code": "PV01",
+        "package_layout_hash": "c73dfd9384ce1d8bf171a6164c4e7ed106584493eca177e36ae3d7065994f2a4",
+        "label_fields": ["品名:可食用作业本", "标注类别:威化糯米纸", "配料表位置:背面小字", "生产许可证:SC10631010100123", "条码:6970000000123"],
+        "first_seen_ref": "snp-A001-0905",
+        "first_seen_at": "2026-09-05T14:00:00+08:00"
+      }
+    },
+    {
+      "event_id": "evt-0009",
+      "event_type": "PACKAGE_VERSION_RECORDED",
+      "aggregate_type": "package_version",
+      "aggregate_id": "pkg-pv02",
+      "occurred_at": "2026-09-11T16:20:00+08:00",
+      "version": 1,
+      "summary": "包装版本 PV02：周边门店实物版，标注『淀粉制品/文具赠品』",
+      "payload": {
+        "product_ref": "prd-edible-homework",
+        "package_version_code": "PV02",
+        "package_layout_hash": "00450ea8fa6448e4e6d4392401e840a634309d44355eded4135af0f0b82834fb",
+        "label_fields": ["品名:作业糯米纸", "标注类别:淀粉制品（文具区赠品）", "配料表缺失项:无色素提示", "生产许可证:SC10631010100123", "条码:6970000000123", "批次:20260820/07"],
+        "first_seen_ref": "spl-S01",
+        "first_seen_at": "2026-09-10T17:05:00+08:00"
+      }
+    },
+    {
+      "event_id": "evt-0010",
+      "event_type": "PAGE_SNAPSHOT_FIXED",
+      "aggregate_type": "listing_snapshot",
+      "aggregate_id": "snp-A001-0905",
+      "occurred_at": "2026-09-05T14:00:00+08:00",
+      "version": 1,
+      "summary": "平台A链接首次页面固定：标题『可食用作业本糖果』",
+      "payload": {
+        "listing_ref": "lst-A001",
+        "snapshot_hash": "2e3ae629a64fc83e9cb51f2f752309263c12880cdc7e61c28a82686fb38f4275",
+        "capture_method": "平台协查接口+网页存证",
+        "page_fields": ["title", "category", "detail_images", "ingredient_declaration", "license_display", "price"],
+        "url": "https://shop.a.example/item/A001",
+        "captured_by": "区市场监管局网络交易监管科"
+      }
+    },
+    {
+      "event_id": "evt-0011",
+      "event_type": "LISTING_CAPTURED",
+      "aggregate_type": "product_listing",
+      "aggregate_id": "lst-A001",
+      "occurred_at": "2026-09-05T14:02:00+08:00",
+      "version": 1,
+      "summary": "平台A链接取证：自称『糖果』",
+      "payload": {
+        "platform": "platform_a",
+        "platform_listing_id": "A001",
+        "seller_ref": "slr-shop-a001",
+        "snapshot_ref": "snp-A001-0905",
+        "title_at_capture": "可食用作业本糖果 开学季网红可以吃的作业本糯米纸",
+        "claimed_category": "candy",
+        "url": "https://shop.a.example/item/A001",
+        "listing_status": "on_sale"
+      }
+    },
+    {
+      "event_id": "evt-0012",
+      "event_type": "PAGE_SNAPSHOT_FIXED",
+      "aggregate_type": "listing_snapshot",
+      "aggregate_id": "snp-A001-0911",
+      "occurred_at": "2026-09-11T20:10:00+08:00",
+      "version": 1,
+      "summary": "平台A链接改版后页面固定：标题改为『可食用威化糯米纸』，类目挪入纸制品",
+      "payload": {
+        "listing_ref": "lst-A001",
+        "snapshot_hash": "363e8de223e158f65b4d2d57ae58f9fda71a26dd642a34ab4e8a5ec50f59d4b0",
+        "capture_method": "平台协查接口+网页存证",
+        "page_fields": ["title", "category", "detail_images", "ingredient_declaration", "license_display"],
+        "captured_by": "区市场监管局网络交易监管科"
+      }
+    },
+    {
+      "event_id": "evt-0013",
+      "event_type": "LISTING_REVISED",
+      "aggregate_type": "product_listing",
+      "aggregate_id": "lst-A001",
+      "occurred_at": "2026-09-11T20:12:00+08:00",
+      "version": 2,
+      "summary": "商家改标题并转移商品类目，批次身份不变",
+      "payload": {
+        "lot_ref": "lot-20260820-07",
+        "revision_no": 2,
+        "changed_fields": ["title", "category"],
+        "previous_snapshot_ref": "snp-A001-0905",
+        "current_snapshot_ref": "snp-A001-0911",
+        "title_before": "可食用作业本糖果",
+        "title_after": "可食用威化糯米纸 可食用纸 摆盘装饰",
+        "category_before": "candy",
+        "category_after": "wafer_rice_paper"
+      }
+    },
+    {
+      "event_id": "evt-0014",
+      "event_type": "PAGE_SNAPSHOT_FIXED",
+      "aggregate_type": "listing_snapshot",
+      "aggregate_id": "snp-B002-0906",
+      "occurred_at": "2026-09-06T10:30:00+08:00",
+      "version": 1,
+      "summary": "平台B链接页面固定：标题标『淀粉制品』",
+      "payload": {
+        "listing_ref": "lst-B002",
+        "snapshot_hash": "d5b1f1d30aca9795af6d3893ca8ac204a25a5263a055b49c642395a805983b86",
+        "capture_method": "网页存证",
+        "page_fields": ["title", "category", "detail_images", "ingredient_declaration", "license_display"]
+      }
+    },
+    {
+      "event_id": "evt-0015",
+      "event_type": "LISTING_CAPTURED",
+      "aggregate_type": "product_listing",
+      "aggregate_id": "lst-B002",
+      "occurred_at": "2026-09-06T10:32:00+08:00",
+      "version": 1,
+      "summary": "平台B链接取证：自称『淀粉制品』",
+      "payload": {
+        "platform": "platform_b",
+        "platform_listing_id": "B002",
+        "seller_ref": "slr-shop-b002",
+        "snapshot_ref": "snp-B002-0906",
+        "title_at_capture": "可以吃的作业本淀粉制品 糯米纸恶搞零食",
+        "claimed_category": "starch_product",
+        "url": "https://shop.b.example/item/B002",
+        "listing_status": "on_sale",
+        "lot_ref": "lot-20260820-07"
+      }
+    },
+    {
+      "event_id": "evt-0016",
+      "event_type": "PAGE_SNAPSHOT_FIXED",
+      "aggregate_type": "listing_snapshot",
+      "aggregate_id": "snp-C003-0908",
+      "occurred_at": "2026-09-08T11:00:00+08:00",
+      "version": 1,
+      "summary": "平台C链接页面固定：标题标『文具赠品』，页面许可证号与实物不符",
+      "payload": {
+        "listing_ref": "lst-C003",
+        "snapshot_hash": "76249dc7817e53e950265de7c488ba7aa8391c7112a774fa3111e93c1fb4d36e",
+        "capture_method": "网页存证",
+        "page_fields": ["title", "category", "detail_images", "license_display", "gift_terms"]
+      }
+    },
+    {
+      "event_id": "evt-0017",
+      "event_type": "LISTING_CAPTURED",
+      "aggregate_type": "product_listing",
+      "aggregate_id": "lst-C003",
+      "occurred_at": "2026-09-08T11:02:00+08:00",
+      "version": 1,
+      "summary": "平台C链接取证：以『文具赠品』名义销售，未取得食品类目资质",
+      "payload": {
+        "platform": "platform_c",
+        "platform_listing_id": "C003",
+        "seller_ref": "slr-shop-b002",
+        "snapshot_ref": "snp-C003-0908",
+        "title_at_capture": "开学文具套装赠品 可食用作业本（非卖品单拍）",
+        "claimed_category": "stationery_gift_nonfood",
+        "url": "https://shop.c.example/item/C003",
+        "listing_status": "on_sale",
+        "lot_ref": "lot-20260820-07"
+      }
+    },
+    {
+      "event_id": "evt-0018",
+      "event_type": "LISTING_LINKED",
+      "aggregate_type": "listing_link",
+      "aggregate_id": "lnk-2026-0001",
+      "occurred_at": "2026-09-08T11:20:00+08:00",
+      "version": 1,
+      "summary": "系统按图片相似度提出三链接同源线索：仅线索，不自动合并",
+      "payload": {
+        "linkage_no": "LNK-2026-0001",
+        "listing_refs": ["lst-A001", "lst-B002", "lst-C003"],
+        "match_basis": ["image_only"],
+        "evidence_refs": [
+          {"ref_type": "listing_snapshot", "ref_id": "snp-A001-0905"},
+          {"ref_type": "listing_snapshot", "ref_id": "snp-B002-0906"},
+          {"ref_type": "listing_snapshot", "ref_id": "snp-C003-0908"}
+        ],
+        "linkage_status": "proposed",
+        "image_similarity_score": 0.94
+      }
+    },
+    {
+      "event_id": "evt-0019",
+      "event_type": "LICENSE_CONFLICT_FLAGGED",
+      "aggregate_type": "food_license",
+      "aggregate_id": "lic-display-C003",
+      "occurred_at": "2026-09-09T10:40:00+08:00",
+      "version": 1,
+      "summary": "冲突提示：平台C页面公示许可证号与实物标注企业不一致",
+      "payload": {
+        "license_no": "SC19999999999999",
+        "conflict_code": "LICENSE_NUMBER_MISMATCH",
+        "evidence_refs": [
+          {"ref_type": "listing_snapshot", "ref_id": "snp-C003-0908"},
+          {"ref_type": "food_license", "ref_id": "lic-SC10631010100123"}
+        ],
+        "detail": "C003 页面公示 SC19999999999999，查无此证；实物与另两链接包装标注企业许可证为 SC10631010100123。",
+        "listing_ref": "lst-C003"
+      }
+    },
+    {
+      "event_id": "evt-0020",
+      "event_type": "SAMPLE_PURCHASED",
+      "aggregate_type": "inspection_sample",
+      "aggregate_id": "spl-S01",
+      "occurred_at": "2026-09-10T17:05:00+08:00",
+      "version": 1,
+      "summary": "在校园周边门店神秘买样『可食用作业本』10袋",
+      "payload": {
+        "sample_no": "SPL-2026-S01",
+        "lot_ref": "lot-20260820-07",
+        "purchased_from_ref": "slr-store-st001",
+        "purchased_at": "2026-09-10T17:05:00+08:00",
+        "buyers": ["王敏(执法证号0100XXXX)", "陈航(执法证号0100YYYY)"],
+        "quantity": "10袋(30g/袋)",
+        "unit_price": "1.50元",
+        "purchase_channel": "offline_mystery_buy",
+        "purchase_evidence_refs": [
+          {"ref_type": "purchase_receipt", "ref_id": "rcpt-S01", "snapshot_hash": "a9a034601e6ab2961319504aa29eb467f80a8b1e58c74d91bb5c84b09cb8cf44"},
+          {"ref_type": "physical_photo", "ref_id": "bag-S01", "snapshot_hash": "a408fbfd13c0ab57495696fbe9eaa9f78ed9ebec3051c1b52a63e344e3964547"}
+        ]
+      }
+    },
+    {
+      "event_id": "evt-0021",
+      "event_type": "SAMPLE_SEALED",
+      "aggregate_type": "inspection_sample",
+      "aggregate_id": "spl-S01",
+      "occurred_at": "2026-09-10T17:40:00+08:00",
+      "version": 2,
+      "summary": "样品现场封存，封条 FY2026-S01，双人签字",
+      "payload": {
+        "sample_ref": "spl-S01",
+        "seal_no": "FY2026-S01",
+        "sealed_at": "2026-09-10T17:40:00+08:00",
+        "sealers": ["王敏(执法证号0100XXXX)", "陈航(执法证号0100YYYY)"],
+        "seal_photo_ref": {"ref_type": "seal_photo", "ref_id": "seal-S01", "snapshot_hash": "6500840e5c1aec376bddc35a9eb95221ea96e5973583ab9088148d5a20695520"},
+        "seal_material": "一次性防伪封条",
+        "storage_condition": "常温避光"
+      }
+    },
+    {
+      "event_id": "evt-0022",
+      "event_type": "LOT_IDENTIFIED",
+      "aggregate_type": "physical_lot",
+      "aggregate_id": "lot-20260820-07",
+      "occurred_at": "2026-09-11T16:00:00+08:00",
+      "version": 1,
+      "summary": "实物批次认定：批次号 20260820/07，身份以标签与生产企业为准",
+      "payload": {
+        "lot_code": "20260820/07",
+        "product_ref": "prd-edible-homework",
+        "package_version_ref": "pkg-pv02",
+        "manufacturer_ref": "mfr-tianyuan",
+        "listing_refs": ["lst-A001", "lst-B002", "lst-C003"],
+        "production_date": "2026-08-20",
+        "shelf_life": "12个月",
+        "identifying_evidence_refs": [
+          {"ref_type": "physical_label_photo", "ref_id": "label-lot", "snapshot_hash": "d7f6431f118261aad5693f93aba552f10d7723a375fd10415e4960d5ac0d0c49"},
+          {"ref_type": "inspection_sample", "ref_id": "spl-S01"},
+          {"ref_type": "manufacturer", "ref_id": "mfr-tianyuan"}
+        ],
+        "identified_by": ["王敏(执法证号0100XXXX)", "陈航(执法证号0100YYYY)"],
+        "identified_at": "2026-09-11T16:00:00+08:00"
+      }
+    },
+    {
+      "event_id": "evt-0023",
+      "event_type": "CLASSIFICATION_CONFLICT_FLAGGED",
+      "aggregate_type": "classification_assessment",
+      "aggregate_id": "cls-cnf-001",
+      "occurred_at": "2026-09-11T16:30:00+08:00",
+      "version": 1,
+      "summary": "冲突提示：同一图案在四个链接/包装上被标成糖果、威化糯米纸、淀粉制品、文具赠品",
+      "payload": {
+        "lot_ref": "lot-20260820-07",
+        "conflict_code": "TITLE_CATEGORY_MISMATCH",
+        "claimed_category": "starch_product",
+        "assessed_category": "unresolved",
+        "evidence_refs": [
+          {"ref_type": "listing_snapshot", "ref_id": "snp-A001-0905"},
+          {"ref_type": "listing_snapshot", "ref_id": "snp-A001-0911"},
+          {"ref_type": "listing_snapshot", "ref_id": "snp-B002-0906"},
+          {"ref_type": "listing_snapshot", "ref_id": "snp-C003-0908"},
+          {"ref_type": "package_version", "ref_id": "pkg-pv02"}
+        ],
+        "detail": "页面宣称类目随链接变化且与包装标注互相矛盾；在实物检测结论出具前系统不作定性，仅提示承办人核查。",
+        "listing_ref": "lst-A001"
+      }
+    },
+    {
+      "event_id": "evt-0024",
+      "event_type": "SAMPLE_TRANSFERRED",
+      "aggregate_type": "custody_transfer",
+      "aggregate_id": "cst-S01-01",
+      "occurred_at": "2026-09-12T09:30:00+08:00",
+      "version": 1,
+      "summary": "样品移交区食品药品检验所，封条完好，双方签字",
+      "payload": {
+        "sample_ref": "spl-S01",
+        "from_party": "区市场监管局抽样组(王敏)",
+        "to_party": "区食品药品检验所业务受理科(李林)",
+        "transferred_at": "2026-09-12T09:30:00+08:00",
+        "seal_intact": true,
+        "handover_doc_ref": {"ref_type": "handover_doc", "ref_id": "hd-S01", "snapshot_hash": "789d4cb0bb7312ed8cc5545e9d7842dfaaa5e0d032617ba8a3b600eaa46aa1df"},
+        "both_parties_signed": true,
+        "transfer_condition": "10袋封条完好，常温运输"
+      }
+    },
+    {
+      "event_id": "evt-0025",
+      "event_type": "SAMPLE_RECEIVED",
+      "aggregate_type": "inspection_sample",
+      "aggregate_id": "spl-S01",
+      "occurred_at": "2026-09-12T09:35:00+08:00",
+      "version": 3,
+      "summary": "检验机构收样：封条完好、外观无异常",
+      "payload": {
+        "sample_ref": "spl-S01",
+        "received_at": "2026-09-12T09:35:00+08:00",
+        "receiver": "李林(检验所收样员)",
+        "seal_intact": true,
+        "appearance_condition": "包装完整、无破损受潮",
+        "storage_condition": "常温留样间",
+        "custody_ref": "cst-S01-01"
+      }
+    },
+    {
+      "event_id": "evt-0026",
+      "event_type": "SAMPLE_RESERVED",
+      "aggregate_type": "inspection_sample",
+      "aggregate_id": "spl-S01",
+      "occurred_at": "2026-09-12T10:00:00+08:00",
+      "version": 4,
+      "summary": "备份样品留样 4 袋，保存至保质期届满后三个月",
+      "payload": {
+        "sample_ref": "spl-S01",
+        "reserved_quantity": "4袋",
+        "retention_location": "检验所留样柜 B-12",
+        "retention_until": "2027-11-20T23:59:59+08:00",
+        "custodian": "周倩(留样管理员)",
+        "reserved_at": "2026-09-12T10:00:00+08:00"
+      }
+    },
+    {
+      "event_id": "evt-0027",
+      "event_type": "TEST_REPORT_ISSUED",
+      "aggregate_type": "test_report",
+      "aggregate_id": "rpt-R01",
+      "occurred_at": "2026-09-16T15:00:00+08:00",
+      "version": 1,
+      "summary": "初检报告：实测为糖果型基质，诱惑红残留超出糖果限量",
+      "payload": {
+        "sample_ref": "spl-S01",
+        "report_no": "JY2026-R01",
+        "testing_org": "区食品药品检验所",
+        "issued_at": "2026-09-16T15:00:00+08:00",
+        "test_round": "initial",
+        "test_items": [
+          {"item": "诱惑红(铝色淀)", "result": "0.12 g/kg", "limit": "≤0.05 g/kg(糖果)", "conclusion": "不合格"},
+          {"item": "感官/基质形态", "result": "压制糖体", "conclusion": "符合糖果基质特征"}
+        ],
+        "overall_conclusion": "不合格",
+        "report_hash": "395880d7d94e5fedd1580928dcb13d66f2593f7f111334b45693781a13d25423"
+      }
+    },
+    {
+      "event_id": "evt-0028",
+      "event_type": "LOT_CLASSIFIED",
+      "aggregate_type": "classification_assessment",
+      "aggregate_id": "cls-001",
+      "occurred_at": "2026-09-17T10:00:00+08:00",
+      "version": 1,
+      "summary": "分类判定：按行为时有效标准与实物证据，认定为『糖果』，非淀粉制品/文具赠品",
+      "payload": {
+        "lot_ref": "lot-20260820-07",
+        "claimed_category": "starch_product",
+        "assessed_category": "candy",
+        "effective_standards": [
+          {"standard_no": "GB 2760", "version": "2014(含现行增补公告)", "effective_at": "2015-05-24T00:00:00+08:00"},
+          {"standard_no": "GB 7718", "version": "2011", "effective_at": "2012-04-20T00:00:00+08:00"}
+        ],
+        "physical_evidence_refs": [
+          {"ref_type": "inspection_sample", "ref_id": "spl-S01"},
+          {"ref_type": "package_version", "ref_id": "pkg-pv02", "snapshot_hash": "00450ea8fa6448e4e6d4392401e840a634309d44355eded4135af0f0b82834fb"},
+          {"ref_type": "test_report", "ref_id": "rpt-R01", "snapshot_hash": "395880d7d94e5fedd1580928dcb13d66f2593f7f111334b45693781a13d25423"}
+        ],
+        "assessor": "李正(食品生产监管科)",
+        "assessed_at": "2026-09-17T10:00:00+08:00",
+        "reasoning": "实物为压制糖体、配料白砂糖居首，检测基质符合糖果特征；『淀粉制品』『文具赠品』仅为页面/包装宣称，无实物支撑。"
+      }
+    },
+    {
+      "event_id": "evt-0029",
+      "event_type": "INGREDIENT_RULE_EVALUATED",
+      "aggregate_type": "ingredient_rule",
+      "aggregate_id": "ing-001",
+      "occurred_at": "2026-09-17T10:20:00+08:00",
+      "version": 1,
+      "summary": "配料与添加剂适用性评估：按糖果类别适用规则，诱惑红超出限量",
+      "payload": {
+        "lot_ref": "lot-20260820-07",
+        "rule_basis": [
+          {"standard_no": "GB 2760", "version": "2014(含现行增补公告)", "effective_at": "2015-05-24T00:00:00+08:00"}
+        ],
+        "declared_ingredients": ["白砂糖", "葡萄糖浆", "糯米粉(添加量8%)", "诱惑红", "食用香精"],
+        "additives": [
+          {"name": "诱惑红及其铝色淀", "ins_no": "129", "verdict": "out_of_range", "detail": "实测0.12 g/kg，按糖果类别限量0.05 g/kg，超出1.4倍"},
+          {"name": "食用香精", "verdict": "permitted", "detail": "按 GB 2760 香精香料使用原则允许"}
+        ],
+        "physical_evidence_refs": [
+          {"ref_type": "package_version", "ref_id": "pkg-pv02"},
+          {"ref_type": "test_report", "ref_id": "rpt-R01"}
+        ],
+        "overall_verdict": "non_compliant",
+        "evaluator": "李正(食品生产监管科)",
+        "evaluated_at": "2026-09-17T10:20:00+08:00"
+      }
+    },
+    {
+      "event_id": "evt-0030",
+      "event_type": "LISTING_LINKED",
+      "aggregate_type": "listing_link",
+      "aggregate_id": "lnk-2026-0001",
+      "occurred_at": "2026-09-17T11:00:00+08:00",
+      "version": 2,
+      "summary": "人工确认三链接与实物批次同源：许可证号、条码、批次号一致，图片仅为线索之一",
+      "payload": {
+        "linkage_no": "LNK-2026-0001",
+        "listing_refs": ["lst-A001", "lst-B002", "lst-C003"],
+        "match_basis": ["manufacturer_license_no", "package_barcode", "lot_code", "package_layout_hash", "manual_confirmation"],
+        "evidence_refs": [
+          {"ref_type": "food_license", "ref_id": "lic-SC10631010100123"},
+          {"ref_type": "product", "ref_id": "prd-edible-homework"},
+          {"ref_type": "physical_lot", "ref_id": "lot-20260820-07"},
+          {"ref_type": "package_version", "ref_id": "pkg-pv01"},
+          {"ref_type": "package_version", "ref_id": "pkg-pv02"}
+        ],
+        "linkage_status": "confirmed",
+        "proposed_lot_ref": "lot-20260820-07",
+        "confirmed_by": "李正(食品生产监管科)",
+        "confirmed_at": "2026-09-17T11:00:00+08:00",
+        "image_similarity_score": 0.94
+      }
+    },
+    {
+      "event_id": "evt-0031",
+      "event_type": "TEST_RESULT_DISPUTED",
+      "aggregate_type": "test_report",
+      "aggregate_id": "rpt-R01",
+      "occurred_at": "2026-09-18T14:00:00+08:00",
+      "version": 2,
+      "summary": "生产企业对初检结论提出异议，申请复检",
+      "payload": {
+        "original_report_ref": "rpt-R01",
+        "disputed_by": "甜园食品厂(委托代理人 苏洁)",
+        "disputed_at": "2026-09-18T14:00:00+08:00",
+        "reasons": ["认为应按淀粉制品判定、诱惑红限量适用错误", "主张样品运输受污染"],
+        "accepted": true,
+        "review_opinion": "异议在法定期限内提出且留样完好，同意启用备用样品复检。"
+      }
+    },
+    {
+      "event_id": "evt-0032",
+      "event_type": "TEST_REPORT_ISSUED",
+      "aggregate_type": "test_report",
+      "aggregate_id": "rpt-R01R",
+      "occurred_at": "2026-09-23T16:00:00+08:00",
+      "version": 1,
+      "summary": "复检报告：维持不合格结论，诱惑红0.10 g/kg仍超糖果限量",
+      "payload": {
+        "sample_ref": "spl-S01",
+        "report_no": "JY2026-R01-F",
+        "testing_org": "市食品检验研究院(复检机构)",
+        "issued_at": "2026-09-23T16:00:00+08:00",
+        "test_round": "retest",
+        "test_items": [
+          {"item": "诱惑红(铝色淀)", "result": "0.10 g/kg", "limit": "≤0.05 g/kg(糖果)", "conclusion": "不合格"},
+          {"item": "封条与运输污染排查", "result": "封条完好、无污染迹象", "conclusion": "排除运输污染"}
+        ],
+        "overall_conclusion": "不合格(维持初检判定)",
+        "report_hash": "2675ed2509fb98f8f45c103a23e2973b7342595f0a3a42d6bb9c30d7527d809b",
+        "original_report_ref": "rpt-R01",
+        "dispute_ref": "rpt-R01"
+      }
+    },
+    {
+      "event_id": "evt-0033",
+      "event_type": "FLOW_NODE_RECORDED",
+      "aggregate_type": "flow_trace",
+      "aggregate_id": "flw-2026-0001",
+      "occurred_at": "2026-09-24T09:00:00+08:00",
+      "version": 1,
+      "summary": "流向节点1：生产企业成品仓入库 1200 袋",
+      "payload": {
+        "trace_no": "FLW-2026-0001",
+        "lot_ref": "lot-20260820-07",
+        "seq": 1,
+        "node_type": "manufacturer_warehouse",
+        "party_ref": "mfr-tianyuan",
+        "quantity": "1200袋",
+        "occurred_at": "2026-08-21T10:00:00+08:00",
+        "evidence_ref": {"ref_type": "warehouse_ledger", "ref_id": "wh-ledger-0821", "snapshot_hash": "f9a668fde3dcb179d9a4f1830f2f7dbaf303838e4fc0be6f64c9af284d2ee8a5"}
+      }
+    },
+    {
+      "event_id": "evt-0034",
+      "event_type": "FLOW_NODE_RECORDED",
+      "aggregate_type": "flow_trace",
+      "aggregate_id": "flw-2026-0001",
+      "occurred_at": "2026-09-24T09:10:00+08:00",
+      "version": 2,
+      "summary": "流向节点2：批发至校园周边门店 240 袋",
+      "payload": {
+        "trace_no": "FLW-2026-0001",
+        "lot_ref": "lot-20260820-07",
+        "seq": 2,
+        "node_type": "offline_store",
+        "party_ref": "slr-store-st001",
+        "quantity": "240袋",
+        "occurred_at": "2026-08-26T09:30:00+08:00",
+        "previous_node_ref": "flw-2026-0001#1",
+        "batch_no_at_node": "进货单 PH-0826",
+        "evidence_ref": {"ref_type": "purchase_sale_record", "ref_id": "st001-in-0826", "snapshot_hash": "c196a850c368e301b6b9e2015daf2d015e78b25d47ad4d3d6b86363226ec17ad"}
+      }
+    },
+    {
+      "event_id": "evt-0035",
+      "event_type": "FLOW_NODE_RECORDED",
+      "aggregate_type": "flow_trace",
+      "aggregate_id": "flw-2026-0001",
+      "occurred_at": "2026-09-24T09:20:00+08:00",
+      "version": 3,
+      "summary": "流向节点3：平台仓直发线上订单 660 袋",
+      "payload": {
+        "trace_no": "FLW-2026-0001",
+        "lot_ref": "lot-20260820-07",
+        "seq": 3,
+        "node_type": "platform_fulfillment",
+        "party_ref": "slr-shop-a001",
+        "quantity": "660袋",
+        "occurred_at": "2026-09-01T08:00:00+08:00",
+        "previous_node_ref": "flw-2026-0001#1",
+        "batch_no_at_node": "平台出库波次 W0901",
+        "evidence_ref": {"ref_type": "platform_fulfillment_log", "ref_id": "pf-W0901", "snapshot_hash": "d95a61457a595c72d2486388d91b7a804f3e807a726d0f68faf903252544c8fd"}
+      }
+    },
+    {
+      "event_id": "evt-0036",
+      "event_type": "FLOW_TRACE_COMPLETED",
+      "aggregate_type": "flow_trace",
+      "aggregate_id": "flw-2026-0001",
+      "occurred_at": "2026-09-24T10:00:00+08:00",
+      "version": 4,
+      "summary": "流向追溯完成：余 300 袋企业库存待控，已售部分存在无法追回数量",
+      "payload": {
+        "trace_no": "FLW-2026-0001",
+        "lot_ref": "lot-20260820-07",
+        "node_count": 3,
+        "completed_at": "2026-09-24T10:00:00+08:00",
+        "known_unrecoverable_quantity": "380袋(已售予消费者，无实名记录)"
+      }
+    },
+    {
+      "event_id": "evt-0037",
+      "event_type": "DECISION_DRAFTED",
+      "aggregate_type": "enforcement_action",
+      "aggregate_id": "dec-2026-001",
+      "occurred_at": "2026-09-25T11:00:00+08:00",
+      "version": 1,
+      "summary": "草拟决定：精确到三条链接、一家门店与一个批次，不按标题全平台下架",
+      "payload": {
+        "decision_no": "DEC-2026-001",
+        "scope": "lot",
+        "scope_targets": [
+          {"kind": "lot", "id": "lot-20260820-07"},
+          {"kind": "link", "id": "lst-A001"},
+          {"kind": "link", "id": "lst-B002"},
+          {"kind": "link", "id": "lst-C003"},
+          {"kind": "store", "id": "slr-store-st001"}
+        ],
+        "proposed_result": "seizure_order",
+        "basis_refs": ["rpt-R01R", "cls-001", "ing-001", "flw-2026-0001", "lic-display-C003"],
+        "drafted_by": "王敏(执法证号0100XXXX)",
+        "drafted_at": "2026-09-25T11:00:00+08:00",
+        "lot_ref": "lot-20260820-07",
+        "draft_doc_ref": "draft-dec-2026-001"
+      }
+    },
+    {
+      "event_id": "evt-0038",
+      "event_type": "DECISION_SIGNED",
+      "aggregate_type": "enforcement_action",
+      "aggregate_id": "dec-2026-001",
+      "occurred_at": "2026-09-26T16:30:00+08:00",
+      "version": 2,
+      "summary": "决定签发：没收不合格批次并处罚款，责令三链接及门店立即下架，人工签字生效",
+      "payload": {
+        "decision_no": "DEC-2026-001",
+        "scope": "lot",
+        "scope_targets": [
+          {"kind": "lot", "id": "lot-20260820-07"},
+          {"kind": "link", "id": "lst-A001"},
+          {"kind": "link", "id": "lst-B002"},
+          {"kind": "link", "id": "lst-C003"},
+          {"kind": "store", "id": "slr-store-st001"}
+        ],
+        "result": "seizure_order",
+        "legal_basis": ["《中华人民共和国食品安全法》第三十四条(禁止生产经营超范围超限量使用食品添加剂的食品)", "GB 2760 糖果类别诱惑红限量"],
+        "evidence_chain_refs": [
+          "snp-A001-0905", "snp-A001-0911", "snp-B002-0906", "snp-C003-0908",
+          "lic-SC10631010100123", "lot-20260820-07", "cls-001", "ing-001",
+          "spl-S01", "cst-S01-01", "rpt-R01", "rpt-R01R", "flw-2026-0001"
+        ],
+        "signed_by": "赵建国(区市场监管局负责人，执法证号010000ZZ)",
+        "signed_at": "2026-09-26T16:30:00+08:00",
+        "effective_at": "2026-09-26T16:30:00+08:00",
+        "lot_ref": "lot-20260820-07",
+        "decision_doc_hash": "6c88a8e29bb2e6e766dd03ae721ff0cedfdad9f4eff42e629f211a4a1888caf5"
+      }
+    },
+    {
+      "event_id": "evt-0039",
+      "event_type": "RECALL_STARTED",
+      "aggregate_type": "recall",
+      "aggregate_id": "rcl-2026-003",
+      "occurred_at": "2026-09-27T09:00:00+08:00",
+      "version": 1,
+      "summary": "企业依据决定对该批次实施召回",
+      "payload": {
+        "recall_no": "RCL-2026-003",
+        "lot_ref": "lot-20260820-07",
+        "decision_ref": "dec-2026-001",
+        "started_at": "2026-09-27T09:00:00+08:00",
+        "initiated_by": "甜园食品厂",
+        "recall_scope": "批次 20260820/07 全部在售与渠道库存",
+        "channel": ["platform_a", "platform_b", "platform_c", "offline_store"]
+      }
+    },
+    {
+      "event_id": "evt-0040",
+      "event_type": "NOTICE_PUBLISHED",
+      "aggregate_type": "public_notice",
+      "aggregate_id": "ntc-school-001",
+      "occurred_at": "2026-09-27T10:00:00+08:00",
+      "version": 1,
+      "summary": "向辖区学校发布风险提示：不含任何购买学生信息",
+      "payload": {
+        "notice_no": "NTC-SCHOOL-2026-001",
+        "audience": "school",
+        "channel": "区教育局-学校食品安全联络群",
+        "title": "关于『可食用作业本』不合格批次的风险提示",
+        "content_hash": "a1ec6dfec394330c59c9bb55391c867652cea9956c285eb9e5eff668a4b66193",
+        "published_at": "2026-09-27T10:00:00+08:00",
+        "child_identity_protected": true,
+        "lot_refs": ["lot-20260820-07"],
+        "decision_ref": "dec-2026-001",
+        "recall_ref": "rcl-2026-003"
+      }
+    },
+    {
+      "event_id": "evt-0041",
+      "event_type": "NOTICE_PUBLISHED",
+      "aggregate_type": "public_notice",
+      "aggregate_id": "ntc-parent-001",
+      "occurred_at": "2026-09-27T10:30:00+08:00",
+      "version": 1,
+      "summary": "通过校方渠道向家长发布消费提示：仅描述商品与批次特征",
+      "payload": {
+        "notice_no": "NTC-PARENT-2026-001",
+        "audience": "parent",
+        "channel": "学校家长委员会转发",
+        "title": "请留意：这种『可以吃的作业本』属不合格糖果，批次20260820/07",
+        "content_hash": "7171bca71d87594ec9a9286973afd89d6fca0bbf7c94d2136dadbfa3ff2e693e",
+        "published_at": "2026-09-27T10:30:00+08:00",
+        "child_identity_protected": true,
+        "lot_refs": ["lot-20260820-07"],
+        "recall_ref": "rcl-2026-003"
+      }
+    },
+    {
+      "event_id": "evt-0042",
+      "event_type": "RECALL_UPDATED",
+      "aggregate_type": "recall",
+      "aggregate_id": "rcl-2026-003",
+      "occurred_at": "2026-09-28T18:00:00+08:00",
+      "version": 2,
+      "summary": "召回反馈：已通知覆盖渠道商品 1200 袋",
+      "payload": {
+        "recall_no": "RCL-2026-003",
+        "stage": "notified",
+        "quantity": 1200,
+        "recorded_at": "2026-09-28T18:00:00+08:00",
+        "cumulative_quantity": 1200,
+        "note": "三平台店铺与23家周边门店均签收召回通知"
+      }
+    },
+    {
+      "event_id": "evt-0043",
+      "event_type": "RECALL_UPDATED",
+      "aggregate_type": "recall",
+      "aggregate_id": "rcl-2026-003",
+      "occurred_at": "2026-09-30T18:00:00+08:00",
+      "version": 3,
+      "summary": "召回反馈：已下架 900 袋（线上660+门店240）",
+      "payload": {
+        "recall_no": "RCL-2026-003",
+        "stage": "delisted",
+        "quantity": 900,
+        "recorded_at": "2026-09-30T18:00:00+08:00",
+        "cumulative_quantity": 900,
+        "note": "三链接平台侧下架660袋，门店自行下架240袋",
+        "evidence_ref": {"ref_type": "platform_delisting_log", "ref_id": "dl-0930"}
+      }
+    },
+    {
+      "event_id": "evt-0044",
+      "event_type": "RECTIFICATION_SUBMITTED",
+      "aggregate_type": "enforcement_action",
+      "aggregate_id": "dec-2026-001",
+      "occurred_at": "2026-09-30T20:00:00+08:00",
+      "version": 3,
+      "summary": "周边门店提交整改：下架、台账整改与申诉依据一并提交",
+      "payload": {
+        "decision_ref": "dec-2026-001",
+        "submitted_by": "晨光文具杂货经营部",
+        "submitted_at": "2026-09-30T20:00:00+08:00",
+        "measures": ["全部在售同批次商品下架封存", "进货查验台账补录供货方资质", "食品与文具分区陈列"],
+        "evidence_refs": [
+          {"ref_type": "delisting_photo", "ref_id": "rect-st001", "snapshot_hash": "455b58f79b1daf3832b499e50d2163c43f3559ec96da50b75d573c1d05ee398e"}
+        ],
+        "rectification_status": "submitted"
+      }
+    },
+    {
+      "event_id": "evt-0045",
+      "event_type": "RECALL_UPDATED",
+      "aggregate_type": "recall",
+      "aggregate_id": "rcl-2026-003",
+      "occurred_at": "2026-10-01T18:00:00+08:00",
+      "version": 4,
+      "summary": "召回反馈：已退回入库 520 袋",
+      "payload": {
+        "recall_no": "RCL-2026-003",
+        "stage": "returned",
+        "quantity": 520,
+        "recorded_at": "2026-10-01T18:00:00+08:00",
+        "cumulative_quantity": 520,
+        "note": "渠道退货400袋、门店退货120袋，企业入库待销毁"
+      }
+    },
+    {
+      "event_id": "evt-0046",
+      "event_type": "APPEAL_FILED",
+      "aggregate_type": "appeal",
+      "aggregate_id": "apl-2026-007",
+      "occurred_at": "2026-09-30T10:00:00+08:00",
+      "version": 1,
+      "summary": "门店对处罚中『未查验许可』认定提出申诉，主张已留存供货资质",
+      "payload": {
+        "appeal_no": "APL-2026-007",
+        "decision_ref": "dec-2026-001",
+        "appellant": "晨光文具杂货经营部",
+        "filed_at": "2026-09-30T10:00:00+08:00",
+        "grounds": ["进货时已查验并留存供货方许可证复印件", "不知道商品标签虚标分类"],
+        "evidence_refs": [
+          {"ref_type": "supplier_license_copy", "ref_id": "apl-lic-copy-01"},
+          {"ref_type": "purchase_sale_record", "ref_id": "st001-in-0826"}
+        ]
+      }
+    },
+    {
+      "event_id": "evt-0047",
+      "event_type": "APPEAL_REVIEWED",
+      "aggregate_type": "appeal",
+      "aggregate_id": "apl-2026-007",
+      "occurred_at": "2026-10-02T15:00:00+08:00",
+      "version": 2,
+      "summary": "复核：部分采纳，维持下架没收决定，对门店免处罚款，责令整改",
+      "payload": {
+        "appeal_ref": "apl-2026-007",
+        "appeal_status": "decision_amended",
+        "reviewed_by": "赵建国(区市场监管局负责人)",
+        "reviewed_at": "2026-10-02T15:00:00+08:00",
+        "opinion": "门店确有查验留存供货许可证的证据，免予罚款；标签虚标非门店能力可识别，但下架与召回义务不变。",
+        "amended_decision_ref": "dec-2026-001#am1"
+      }
+    },
+    {
+      "event_id": "evt-0048",
+      "event_type": "RECALL_UPDATED",
+      "aggregate_type": "recall",
+      "aggregate_id": "rcl-2026-003",
+      "occurred_at": "2026-10-02T18:00:00+08:00",
+      "version": 5,
+      "summary": "召回反馈：380 袋已售予零散消费者、无实名记录，登记无法追回",
+      "payload": {
+        "recall_no": "RCL-2026-003",
+        "stage": "unrecoverable",
+        "quantity": 380,
+        "recorded_at": "2026-10-02T18:00:00+08:00",
+        "cumulative_quantity": 380,
+        "note": "线下零售与线上零散订单，经公告通知后无退回"
+      }
+    },
+    {
+      "event_id": "evt-0049",
+      "event_type": "RECALL_CLOSED",
+      "aggregate_type": "recall",
+      "aggregate_id": "rcl-2026-003",
+      "occurred_at": "2026-10-03T09:30:00+08:00",
+      "version": 6,
+      "summary": "召回关闭对账：已通知1200/已下架900/已退回520/无法追回380",
+      "payload": {
+        "recall_no": "RCL-2026-003",
+        "closed_at": "2026-10-03T09:30:00+08:00",
+        "totals": {"notified": 1200, "delisted": 900, "returned": 520, "unrecoverable": 380},
+        "unrecoverable_reasons": ["已售予零散消费者无销售实名记录", "公告期届满无退回"]
+      }
+    },
+    {
+      "event_id": "evt-0050",
+      "event_type": "CASE_SNAPSHOT_BUILT",
+      "aggregate_type": "case_snapshot",
+      "aggregate_id": "case-2026-001",
+      "occurred_at": "2026-10-03T10:00:00+08:00",
+      "version": 1,
+      "summary": "一案一档归档：从一袋实物可回查页面宣传、资质、分类、检测、流向、决定、申诉与召回",
+      "payload": {
+        "case_no": "case-2026-001",
+        "anchor_lot_ref": "lot-20260820-07",
+        "included_refs": [
+          "lst-A001", "lst-B002", "lst-C003", "lnk-2026-0001",
+          "snp-A001-0905", "snp-A001-0911", "snp-B002-0906", "snp-C003-0908",
+          "slr-shop-a001", "slr-shop-b002", "slr-store-st001", "mfr-tianyuan",
+          "lic-SC10631010100123", "lic-JY1310101000456", "lic-display-C003",
+          "prd-edible-homework", "pkg-pv01", "pkg-pv02",
+          "lot-20260820-07", "cls-cnf-001", "cls-001", "ing-001",
+          "spl-S01", "cst-S01-01", "rpt-R01", "rpt-R01R",
+          "flw-2026-0001", "dec-2026-001", "apl-2026-007",
+          "rcl-2026-003", "ntc-school-001", "ntc-parent-001"
+        ],
+        "generated_at": "2026-10-03T10:00:00+08:00",
+        "snapshot_hash": "564d2ef64df999179747ed8bd4740bc4af8eb3d00958da9ee116879a3f35eb32",
+        "generated_by": "区市场监管局案件管理系统"
+      }
+    }
+  ]
+}
