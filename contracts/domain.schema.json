@@ -20,9 +20,20 @@
       "type": "string",
       "enum": [
         "LISTING_CAPTURED",
+        "LISTING_REVISED",
+        "LISTING_LINKED",
+        "ENTITY_REGISTERED",
+        "LICENSE_VERIFIED",
+        "VERSION_RECORDED",
         "LOT_CLASSIFIED",
+        "CONFLICT_FLAGGED",
         "SAMPLE_TRANSFERRED",
+        "REPORT_ISSUED",
+        "RETEST_FILED",
+        "FLOW_RECORDED",
         "DECISION_SIGNED",
+        "MERCHANT_INFORMED",
+        "NOTICE_PUBLISHED",
         "RECALL_UPDATED"
       ]
     },
@@ -30,9 +41,17 @@
       "type": "string",
       "enum": [
         "product_listing",
+        "business_entity",
+        "manufacturer",
+        "license",
+        "product_version",
         "physical_lot",
         "inspection_sample",
-        "enforcement_action"
+        "test_report",
+        "distribution_flow",
+        "enforcement_action",
+        "public_notice",
+        "recall_notice"
       ]
     },
     "aggregate_id": {
